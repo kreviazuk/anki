@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12px" height="12px" viewBox="0 0 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon-yitianjia</title>
+    <g id="页面-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="9-1-1-晨检" transform="translate(-51, -584)">
+            <g id="编组-5备份" transform="translate(51, 583)">
+                <g id="icon/add/yitianjia" transform="translate(0, 1)">
+                    <circle id="椭圆形" fill="#0CCCAC" cx="6" cy="6" r="6"></circle>
+                    <path d="M7.12840908,3 C7.53769153,3 7.86948052,3.33178898 7.86948052,3.74107144 L7.86948052,7.50892856 C7.86948052,7.91821102 7.53769153,8.25 7.12840908,8.25 L7.11055195,8.25 L7.09648052,8.249 L4.86055195,8.25 C4.4512695,8.25 4.11948052,7.91821102 4.11948052,7.50892856 L4.11948052,7.49107144 C4.11948052,7.08178898 4.4512695,6.75 4.86055195,6.75 L6.36948052,6.749 L6.36948052,3.74107144 C6.36948052,3.33178898 6.7012695,3 7.11055195,3 L7.12840908,3 Z" id="形状结合" fill="#FFFFFF" transform="translate(5.9945, 5.625) rotate(45) translate(-5.9945, -5.625)"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

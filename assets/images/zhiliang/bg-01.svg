@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="351px" height="110px" viewBox="0 0 351 110" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>bg-01</title>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="351" height="110" rx="5"></rect>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-3">
+            <stop stop-color="#D9E8FF" stop-opacity="0.7" offset="0%"></stop>
+            <stop stop-color="#F3FAFF" stop-opacity="0.4" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-4">
+            <stop stop-color="#4F8BFC" offset="0%"></stop>
+            <stop stop-color="#2469F6" offset="100%"></stop>
+        </linearGradient>
+        <rect id="path-5" x="0" y="2.63529412" width="40.5935484" height="49.0823529" rx="1.92045455"></rect>
+        <filter x="-2.5%" y="-2.0%" width="104.9%" height="104.1%" filterUnits="objectBoundingBox" id="filter-6">
+            <feGaussianBlur stdDeviation="0.5" in="SourceAlpha" result="shadowBlurInner1"></feGaussianBlur>
+            <feOffset dx="1" dy="1" in="shadowBlurInner1" result="shadowOffsetInner1"></feOffset>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 1   0 0 0 0 1  0 0 0 0.7 0" type="matrix" in="shadowInnerInner1"></feColorMatrix>
+        </filter>
+        <ellipse id="path-7" cx="35.8967742" cy="8.56470588" rx="6.03870968" ry="5.92941176"></ellipse>
+        <filter x="-4.1%" y="-4.2%" width="108.3%" height="108.4%" filterUnits="objectBoundingBox" id="filter-8">
+            <feGaussianBlur stdDeviation="0.25" in="SourceAlpha" result="shadowBlurInner1"></feGaussianBlur>
+            <feOffset dx="0.5" dy="0.5" in="shadowBlurInner1" result="shadowOffsetInner1"></feOffset>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0.782985185   0 0 0 0 0.873606756   0 0 0 0 1  0 0 0 1 0" type="matrix" in="shadowInnerInner1"></feColorMatrix>
+        </filter>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-9">
+            <stop stop-color="#EDF4FF" offset="0%"></stop>
+            <stop stop-color="#F1F8FF" stop-opacity="0.615405722" offset="31.5972602%"></stop>
+            <stop stop-color="#F3FAFF" stop-opacity="0.4" offset="100%"></stop>
+        </linearGradient>
+        <filter x="-49.0%" y="-49.0%" width="198.0%" height="198.0%" filterUnits="objectBoundingBox" id="filter-10">
+            <feGaussianBlur stdDeviation="16" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-11">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="页面-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="6-1-质量评估" transform="translate(-12, -144)">
+            <g id="编组-5" transform="translate(12, 144)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="矩形" fill="#FFFFFF" xlink:href="#path-1"></use>
+                <circle id="椭圆形" fill="url(#linearGradient-3)" mask="url(#mask-2)" cx="48" cy="102" r="60"></circle>
+                <g id="编组-21" mask="url(#mask-2)">
+                    <g transform="translate(30, 27)">
+                        <rect id="矩形" stroke="none" fill-opacity="0.9" fill="url(#linearGradient-4)" fill-rule="evenodd" x="11.4064516" y="6.91764706" width="40.5935484" height="49.0823529" rx="1.92045455"></rect>
+                        <rect id="矩形" stroke="none" fill="#72A1FB" fill-rule="evenodd" style="mix-blend-mode: multiply;" x="27.5096774" y="30.6352941" width="17.7806452" height="4.94117647" rx="0.640151515"></rect>
+                        <rect id="矩形备份-23" stroke="none" fill="#72A1FB" fill-rule="evenodd" style="mix-blend-mode: multiply;" x="27.5096774" y="38.2117647" width="17.7806452" height="4.94117647" rx="0.640151515"></rect>
+                        <g id="矩形" stroke="none" fill="none">
+                            <use fill-opacity="0.4" fill="#F3FAFF" fill-rule="evenodd" xlink:href="#path-5"></use>
+                            <use fill="black" fill-opacity="1" filter="url(#filter-6)" xlink:href="#path-5"></use>
+                        </g>
+                        <polygon id="矩形" stroke="none" fill="#2154F6" fill-rule="evenodd" points="30.5290323 13.1764706 41.2645161 13.1764706 41.2645161 23.7176471 35.8967742 20.6211765 30.5290323 23.7176471"></polygon>
+                        <rect id="矩形" stroke="none" fill="#FFFFFF" fill-rule="evenodd" x="6.70967742" y="13.1764706" width="17.7806452" height="2.24" rx="0.640151511"></rect>
+                        <rect id="矩形备份-23" stroke="none" fill="#FFFFFF" fill-rule="evenodd" x="6.70967742" y="20.7529412" width="17.7806452" height="2.24" rx="0.640151511"></rect>
+                        <rect id="矩形备份-24" stroke="#FFFFFF" stroke-width="1.69565217" fill="none" x="7.55750351" y="29.4407673" width="25.4347826" height="15.1043478" rx="0.640151511"></rect>
+                        <ellipse id="椭圆形" stroke="none" fill="#387AFF" fill-rule="evenodd" cx="35.8967742" cy="8.56470588" rx="8.72258065" ry="8.56470588"></ellipse>
+                        <g id="椭圆形" stroke="none" fill="none">
+                            <use fill-opacity="0.5" fill="#ABC8FD" fill-rule="evenodd" xlink:href="#path-7"></use>
+                            <use fill="black" fill-opacity="1" filter="url(#filter-8)" xlink:href="#path-7"></use>
+                        </g>
+                    </g>
+                </g>
+                <circle id="椭圆形备份" fill="url(#linearGradient-9)" filter="url(#filter-10)" mask="url(#mask-2)" cx="321" cy="37" r="49"></circle>
+                <rect id="矩形" stroke="url(#linearGradient-11)" mask="url(#mask-2)" x="0.5" y="0.5" width="350" height="109" rx="5"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

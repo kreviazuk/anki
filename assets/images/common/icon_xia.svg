@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="10px" height="10px" viewBox="0 0 10 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon_xia</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" fill-opacity="0.5">
+        <g id="4-1-一键建托" transform="translate(-343, -111)" fill="#494766">
+            <g id="三角形" transform="translate(343, 111)">
+                <path d="M5.6575624,2.92058736 L8.78307787,7.29630902 C9.12894614,7.7805246 9.01679349,8.45344052 8.53257791,8.79930879 C8.34984309,8.92983366 8.13089148,9 7.906328,9 L2.093672,9 C1.49861772,9 1.01623092,8.5176132 1.01623092,7.92255892 C1.01623092,7.69799545 1.08639726,7.47904383 1.21692213,7.29630902 L4.3424376,2.92058736 C4.6018388,2.55742568 5.10652574,2.47331119 5.46968743,2.73271239 C5.54224947,2.78454242 5.60573237,2.84802532 5.6575624,2.92058736 Z" transform="translate(5, 5.5) scale(-1, 1) rotate(-180) translate(-5, -5.5)"></path>
+            </g>
+        </g>
+    </g>
+</svg>
