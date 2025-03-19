@@ -32,7 +32,7 @@ export default function RootLayout() {
 
   const checkAuthStatus = async () => {
     try {
-      const token = await AsyncStorage.getItem('userToken');
+      const token = await AsyncStorage.getItem('token');
       setIsAuthenticated(!!token);
     } catch (e) {
       setIsAuthenticated(false);
