@@ -6,6 +6,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import 'react-native-console-time-polyfill';
+
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 

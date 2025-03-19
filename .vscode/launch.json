@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Expo",
+      "request": "launch",
+      "type": "reactnative",
+      "cwd": "${workspaceFolder}",
+      "platform": "all",
+      "expoHostType": "tunnel",
+      "sourceMaps": true,
+      "enableDebug": true
+    },
+    {
+      "name": "Attach to Expo",
+      "request": "attach",
+      "type": "reactnative",
+      "cwd": "${workspaceFolder}",
+      "platform": "all",
+      "port": 19000
+    }
+  ]
+} 
