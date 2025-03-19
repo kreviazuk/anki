@@ -102,13 +102,35 @@ export class JsonServiceClient {
       const response = await fetch(url, {
         method,
         headers: {
+          'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': token || "",
+          'Authorization': token || ""
         },
-        body: data ? JSON.stringify(data) : undefined,
+        body: data ? JSON.stringify(data) : undefined
       });
 
-      const responseData = await response.json();
+      // 检查HTTP状态码
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HTTP Error Response:', {
+          status: response.status,
+          statusText: response.statusText,
+          url,
+          data,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: errorText
+        });
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText || response.statusText}`);
+      }
+
+      let responseData: any;
+      try {
+        responseData = await response.json();
+      } catch (error) {
+        console.error("JSON解析错误:", error);
+        console.error("原始响应:", await response.text());
+        throw new Error("服务器响应格式错误");
+      }
       
       // 检查业务状态码
       if (responseData.code === 600) {
@@ -123,7 +145,11 @@ export class JsonServiceClient {
       return responseData;
     } catch (error) {
       console.error("请求失败", error);
-      Alert.alert('错误', '网络请求失败，请稍后重试');
+      if (error instanceof Error) {
+        Alert.alert('错误', error.message || '网络请求失败，请稍后重试');
+      } else {
+        Alert.alert('错误', '网络请求失败，请稍后重试');
+      }
       throw error;
     }
   }
