@@ -1,11 +1,12 @@
-import { StyleSheet, View, TextInput, FlatList, TouchableOpacity, Platform, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, View, TextInput, FlatList, TouchableOpacity, Platform, ActivityIndicator, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '../../../src/components/ThemedText';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
-import { GovJiGou, GovJiGouService_GetGovJiGous, ListResponse } from '../../../src/services/auth';
+import { GovJiGou, GovJiGouService_GetGovJiGous } from '../../../src/services/auth';
 import { request } from '../../../src/services/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getImageUrl } from '../../../src/utils/image';
 
 export default function InstitutionSelectScreen() {
   const [searchText, setSearchText] = useState('');
@@ -22,16 +23,12 @@ export default function InstitutionSelectScreen() {
       setIsLoading(true);
       setError(null);
       
-      // 创建请求对象
       const getInstitutionsRequest = new GovJiGouService_GetGovJiGous();
-      
-      // 发送请求
       const response = await request.send(getInstitutionsRequest) as GovJiGou[];
       setInstitutions(response);
     } catch (err) {
       console.error('Error fetching institutions:', err);
-      // Alert.alert('获取机构列表失败', err instanceof Error ? err.message : '获取机构列表失败2');
-      setError(err instanceof Error ? err.message : '获取机构列表失败2');
+      setError(err instanceof Error ? err.message : '获取机构列表失败');
     } finally {
       setIsLoading(false);
     }
@@ -40,24 +37,46 @@ export default function InstitutionSelectScreen() {
   const handleSelectInstitution = async (institution: GovJiGou) => {
     try {
       await AsyncStorage.setItem('selectedInstitution', JSON.stringify(institution));
-      router.back(); // 返回首页
+      router.back();
     } catch (err) {
       Alert.alert('错误', '保存机构信息失败');
     }
   };
 
-  const renderInstitutionItem = ({ item }: { item: GovJiGou }) => (
-    <TouchableOpacity 
-      style={styles.institutionItem}
-      onPress={() => handleSelectInstitution(item)}
-    >
-      <View style={styles.institutionInfo}>
-        <ThemedText style={styles.institutionName}>{item.JiGou_MingCheng}</ThemedText>
-        <ThemedText style={styles.institutionDetail}>机构代码：{item.SheHui_XinYong_DaiMa}</ThemedText>
-        <ThemedText style={styles.institutionDetail}>地址：{item.DiZhi}</ThemedText>
-      </View>
-    </TouchableOpacity>
-  );
+  const getAvatarColor = (index: number) => {
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD'];
+    return colors[index % colors.length];
+  };
+
+  const renderInstitutionItem = ({ item, index }: { item: GovJiGou; index: number }) => {
+    const imageUrl = item.TuPian?.[0]?.url ? getImageUrl(item.TuPian[0].url) : '';
+    return (
+      <TouchableOpacity 
+        style={styles.institutionItem}
+        onPress={() => handleSelectInstitution(item)}
+      >
+        <View style={[styles.avatar, !imageUrl && { backgroundColor: getAvatarColor(index) }]}>
+          {imageUrl ? (
+            <Image 
+              source={{ uri: imageUrl }}
+              style={styles.avatarImage}
+              defaultSource={require('../../../assets/images/icon.png')}
+            />
+          ) : (
+            <ThemedText style={styles.avatarText}>
+              {item.JiGou_MingCheng?.charAt(0) || '机'}
+            </ThemedText>
+          )}
+        </View>
+        <View style={styles.institutionInfo}>
+          <ThemedText style={styles.institutionName} numberOfLines={2}>
+            {item.JiGou_MingCheng || '未知机构名称'}
+          </ThemedText>
+        </View>
+        <ThemedText style={styles.arrowIcon}>›</ThemedText>
+      </TouchableOpacity>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -82,15 +101,14 @@ export default function InstitutionSelectScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <FlatList
         data={institutions}
         renderItem={renderInstitutionItem}
         keyExtractor={item => item.F_Id || ''}
-        contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -98,7 +116,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: Platform.OS === 'ios' ? 0 : 8,
   },
   centerContainer: {
     flex: 1,
@@ -107,65 +124,49 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-  header: {
+  institutionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    padding: 16,
+    backgroundColor: '#fff',
   },
-  backButton: {
-    padding: 8,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#4080FF',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  placeholder: {
+  avatar: {
     width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+    overflow: 'hidden',
   },
-  searchContainer: {
-    padding: 12,
-    paddingTop: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
-    backgroundColor: '#fff',
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 20,
   },
-  searchInput: {
-    height: 36,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-  },
-  listContent: {
-    padding: 16,
-  },
-  institutionItem: {
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+  avatarText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
   },
   institutionInfo: {
-    gap: 4,
+    flex: 1,
+    marginRight: 8,
   },
   institutionName: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '400',
+    color: '#333',
   },
-  institutionDetail: {
-    fontSize: 14,
-    color: '#666',
+  arrowIcon: {
+    fontSize: 20,
+    color: '#CCC',
+    marginLeft: 4,
   },
   separator: {
-    height: 1,
+    height: StyleSheet.hairlineWidth,
     backgroundColor: '#E5E5E5',
+    marginLeft: 68,
   },
   errorText: {
     fontSize: 16,
