@@ -7,6 +7,7 @@ import { Colors } from '../../src/constants/Colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
+import { router } from 'expo-router';
 
 interface MenuItemProps {
   title: string;
@@ -73,15 +74,20 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <ThemedText style={styles.institutionName}>托育机构名称托托育机构名称</ThemedText>
+        <View style={styles.headerContent}>
+          <ThemedText style={styles.institutionName}>托育机构名称托托育机构名称</ThemedText>
+          <TouchableOpacity 
+            style={styles.switchButton}
+            onPress={() => {
+              router.push('/(modals)/institution/select');
+            }}
+          >
+            <ThemedText style={styles.switchButtonText}>切换</ThemedText>
+          </TouchableOpacity>
+        </View>
         <View style={styles.institutionInfo}>
           <ThemedText style={styles.infoText}>机构代码：12345678</ThemedText>
           <ThemedText style={styles.infoText}>地址：某某市某某区某某街道</ThemedText>
-          {__DEV__ && token && (
-            <ThemedText style={[styles.infoText, { color: '#4080FF' }]}>
-              Token: {token.substring(0, 20)}...
-            </ThemedText>
-          )}
         </View>
       </View>
       
@@ -108,6 +114,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#E5E5E5',
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   institutionName: {
     fontSize: 18,
@@ -163,5 +175,15 @@ const styles = StyleSheet.create({
   menuText: {
     fontSize: 12,
     textAlign: 'center',
+  },
+  switchButton: {
+    backgroundColor: '#F5F5F5',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  switchButtonText: {
+    fontSize: 14,
+    color: '#4080FF',
   },
 }); 
