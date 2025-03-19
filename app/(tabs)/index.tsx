@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GovService_LoginSendCode, GovService_Login, GovScope, BaseResponse, LoginResponse } from '@/services/auth';
-import { request } from '@/services/client';
+import { request } from '../../src/services/client';
+import { GovService_LoginSendCode, GovService_Login, GovScope, BaseResponse, LoginResponse } from '../../src/services/auth';
 
 export default function LoginScreen() {
   const [phone, setPhone] = useState('');
@@ -106,9 +106,20 @@ export default function LoginScreen() {
       
       console.log('Login response received:', response);
       
-      if (response.Code === 0 && response.Token) {
+      if (response.Code === 200 && response.Token) {
         await AsyncStorage.setItem('token', response.Token);
-        router.replace('/(tabs)');
+        Alert.alert(
+          '登录成功',
+          '欢迎回来！',
+          [
+            {
+              text: '确定',
+              onPress: () => {
+                router.replace('/(tabs)');
+              },
+            },
+          ]
+        );
       } else {
         console.error('Login failed:', response.Message);
         Alert.alert('错误', response.Message || '登录失败，请重试');

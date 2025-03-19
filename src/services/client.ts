@@ -5,12 +5,22 @@ import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import Constants from 'expo-constants';
 
+interface ApiResponse<T = any> {
+  Code: number;
+  Message: string | null;
+  Token?: string;
+  UserId?: string;
+  Data?: T;
+}
+
 export class JsonServiceClient {
   private baseUrl: string;
   private timeout: number;
 
   constructor() {
-    this.baseUrl = Constants.expoConfig?.extra?.apiUrl || 'http://gapitest.yban.co/api';
+    // 确保baseUrl末尾有斜杠
+    const baseUrl = Constants.expoConfig?.extra?.apiUrl || 'http://gapitest.yban.co';
+    this.baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
     this.timeout = parseInt(Constants.expoConfig?.extra?.apiTimeout || '10000');
   }
 
@@ -64,10 +74,12 @@ export class JsonServiceClient {
       }
     });
 
+    const finalUrl = `${this.baseUrl}${url}`;
+
     if (queryParams.length > 0) {
-      url += (url.includes('?') ? '&' : '?') + queryParams.join('&');
+      return finalUrl + (finalUrl.includes('?') ? '&' : '?') + queryParams.join('&');
     }
-    return `${this.baseUrl}${url}`;
+    return finalUrl;
   }
 
   private toData<T>(request: IReturn<T>) {
@@ -109,40 +121,41 @@ export class JsonServiceClient {
         body: data ? JSON.stringify(data) : undefined
       });
 
-      // 检查HTTP状态码
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('HTTP Error Response:', {
-          status: response.status,
-          statusText: response.statusText,
-          url,
-          data,
-          headers: Object.fromEntries(response.headers.entries()),
-          body: errorText
-        });
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText || response.statusText}`);
-      }
-
-      let responseData: any;
+      let responseData: ApiResponse<T>;
       try {
         responseData = await response.json();
       } catch (error) {
-        console.error("JSON解析错误:", error);
-        console.error("原始响应:", await response.text());
-        throw new Error("服务器响应格式错误");
+        console.error('Response parsing error:', error);
+        console.error('Original response:', await response.text());
+        throw new Error('服务器响应格式错误');
       }
-      
+
+      // 如果返回了新token，更新存储
+      if (responseData.Token) {
+        await AsyncStorage.setItem("token", responseData.Token);
+      }
+
       // 检查业务状态码
-      if (responseData.code === 600) {
+      if (responseData.Code === 600) {
         await AsyncStorage.removeItem("token");
-        Alert.alert('提示', responseData.msg || '登录已过期');
+        Alert.alert('提示', responseData.Message || '登录已过期');
         setTimeout(() => {
-          router.replace('/login');
+          router.replace({ pathname: '/login' } as any);
         }, 2000);
-        throw new Error(responseData.msg || "登录已过期");
+        throw new Error(responseData.Message || "登录已过期");
+      }
+
+      if (responseData.Code !== 200) {
+        console.error('Business Error Response:', {
+          code: responseData.Code,
+          message: responseData.Message,
+          url,
+          data
+        });
+        throw new Error(responseData.Message || "请求失败");
       }
       
-      return responseData;
+      return responseData.Data || responseData as any;
     } catch (error) {
       console.error("请求失败", error);
       if (error instanceof Error) {
