@@ -1,30 +1,123 @@
-import { Image, StyleSheet, Platform, ScrollView, TouchableOpacity, TextInput } from 'react-native';
-import { useState } from 'react';
+import { Image, StyleSheet, Platform, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GovService_LoginSendCode, GovService_Login, GovScope, BaseResponse, LoginResponse } from '@/services/auth';
+import { request } from '@/services/client';
 
 export default function LoginScreen() {
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [isAgreed, setIsAgreed] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
 
-  const handleGetVerificationCode = () => {
-    // 实现获取验证码的逻辑
-    console.log('Getting verification code for:', phone);
+  useEffect(() => {
+    console.log('LoginScreen mounted');
+    return () => {
+      console.log('LoginScreen unmounted');
+    };
+  }, []);
+
+  const handleGetVerificationCode = async () => {
+    if (!phone || phone.length !== 11) {
+      Alert.alert('提示', '请输入正确的手机号码');
+      return;
+    }
+
+    if (loading) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      console.log('Sending verification code request...');
+      
+      // 创建请求对象
+      const sendCodeRequest = new GovService_LoginSendCode({
+        body: {
+          PhoneNumber: phone,
+          Scope: GovScope.JiGou
+        }
+      });
+      
+      // 发送请求
+      const response = await request.send(sendCodeRequest) as BaseResponse;
+      
+      console.log('Response received:', response);
+      
+      if (response.Code === 0) {
+        Alert.alert('成功', '验证码已发送，请注意查收');
+        setCountdown(60);
+        const timer = setInterval(() => {
+          setCountdown((prev) => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      } else {
+        console.error('Failed to send code:', response.Message);
+        Alert.alert('错误', response.Message || '发送验证码失败，请重试');
+      }
+    } catch (error) {
+      console.error('Error sending verification code:', error);
+      Alert.alert('错误', '网络错误，请稍后重试');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogin = async () => {
-    if (phone && verificationCode && isAgreed) {
-      try {
-        // 这里应该是实际的登录API调用
-        // 模拟登录成功，保存token
-        await AsyncStorage.setItem('userToken', 'dummy-token');
-        // 登录成功后跳转到首页
+    if (!phone || phone.length !== 11) {
+      Alert.alert('提示', '请输入正确的手机号码');
+      return;
+    }
+
+    if (!verificationCode) {
+      Alert.alert('提示', '请输入验证码');
+      return;
+    }
+
+    if (!isAgreed) {
+      Alert.alert('提示', '请阅读并同意服务协议和隐私权政策');
+      return;
+    }
+
+    try {
+      setLoginLoading(true);
+      console.log('Sending login request...');
+      
+      // 创建登录请求对象
+      const loginRequest = new GovService_Login({
+        body: {
+          PhoneNumber: phone,
+          Code: verificationCode,
+          Scope: GovScope.JiGou
+        }
+      });
+      
+      // 发送请求
+      const response = await request.send(loginRequest) as LoginResponse;
+      
+      console.log('Login response received:', response);
+      
+      if (response.Code === 0 && response.Token) {
+        await AsyncStorage.setItem('token', response.Token);
         router.replace('/(tabs)');
-      } catch (error) {
-        console.error('Login failed:', error);
+      } else {
+        console.error('Login failed:', response.Message);
+        Alert.alert('错误', response.Message || '登录失败，请重试');
       }
+    } catch (error) {
+      console.error('Login failed:', error);
+      Alert.alert('错误', '网络错误，请稍后重试');
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -66,21 +159,35 @@ export default function LoginScreen() {
                 maxLength={6}
               />
               <TouchableOpacity 
-                style={styles.getCodeButton}
+                style={[
+                  styles.getCodeButton,
+                  (countdown > 0 || !phone || phone.length !== 11 || loading) && styles.getCodeButtonDisabled
+                ]}
                 onPress={handleGetVerificationCode}
+                disabled={countdown > 0 || !phone || phone.length !== 11 || loading}
               >
-                <Text style={styles.getCodeText}>获取验证码</Text>
+                <Text style={[
+                  styles.getCodeText,
+                  (countdown > 0 || !phone || phone.length !== 11 || loading) && styles.getCodeTextDisabled
+                ]}>
+                  {countdown > 0 ? `${countdown}s后重试` : '获取验证码'}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
 
           {/* 登录按钮 */}
           <TouchableOpacity 
-            style={[styles.loginButton, (!phone || !verificationCode || !isAgreed) && styles.loginButtonDisabled]}
+            style={[
+              styles.loginButton, 
+              (!phone || !verificationCode || !isAgreed || loginLoading) && styles.loginButtonDisabled
+            ]}
             onPress={handleLogin}
-            disabled={!phone || !verificationCode || !isAgreed}
+            disabled={!phone || !verificationCode || !isAgreed || loginLoading}
           >
-            <Text style={styles.loginButtonText}>登录</Text>
+            <Text style={styles.loginButtonText}>
+              {loginLoading ? '登录中...' : '登录'}
+            </Text>
           </TouchableOpacity>
 
           {/* 协议区域 */}
@@ -161,9 +268,15 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
   },
+  getCodeButtonDisabled: {
+    opacity: 0.5,
+  },
   getCodeText: {
     color: '#4080FF',
     fontSize: 14,
+  },
+  getCodeTextDisabled: {
+    color: '#999',
   },
   loginButton: {
     backgroundColor: '#4080FF',
