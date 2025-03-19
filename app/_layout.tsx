@@ -57,9 +57,10 @@ export default function RootLayout() {
   // 已登录，显示主应用
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(modals)" />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

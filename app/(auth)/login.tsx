@@ -48,7 +48,7 @@ export default function LoginScreen() {
       
       console.log('Response received:', response);
       
-      if (response.Code === 0) {
+      if (response.Code === 200) {
         Alert.alert('成功', '验证码已发送，请注意查收');
         setCountdown(60);
         const timer = setInterval(() => {

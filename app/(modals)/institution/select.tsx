@@ -1,90 +1,92 @@
-import { StyleSheet, View, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TextInput, FlatList, TouchableOpacity, Platform, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ThemedText } from '../../src/components/ThemedText';
-import { useState } from 'react';
+import { ThemedText } from '../../../src/components/ThemedText';
+import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
-
-interface Institution {
-  id: string;
-  name: string;
-  code: string;
-  address: string;
-}
+import { GovJiGou, GovJiGouService_GetGovJiGous, ListResponse } from '../../../src/services/auth';
+import { request } from '../../../src/services/client';
 
 export default function InstitutionSelectScreen() {
   const [searchText, setSearchText] = useState('');
+  const [institutions, setInstitutions] = useState<GovJiGou[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  // 模拟机构数据，实际应该从API获取
-  const institutions: Institution[] = [
-    {
-      id: '1',
-      name: '示例托育机构1',
-      code: '12345678',
-      address: '某某市某某区某某街道1号',
-    },
-    {
-      id: '2',
-      name: '示例托育机构2',
-      code: '87654321',
-      address: '某某市某某区某某街道2号',
-    },
-    // 可以添加更多机构数据
-  ];
+  useEffect(() => {
+    fetchInstitutions();
+  }, []);
 
-  const filteredInstitutions = institutions.filter(
-    inst => inst.name.includes(searchText) || inst.code.includes(searchText)
-  );
+  const fetchInstitutions = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      // 创建请求对象
+      const getInstitutionsRequest = new GovJiGouService_GetGovJiGous();
+      
+      // 发送请求
+      const response = await request.send(getInstitutionsRequest) as GovJiGou[];
+      setInstitutions(response);
+    } catch (err) {
+      console.error('Error fetching institutions:', err);
+      // Alert.alert('获取机构列表失败', err instanceof Error ? err.message : '获取机构列表失败2');
+      setError(err instanceof Error ? err.message : '获取机构列表失败2');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const handleSelectInstitution = (institution: Institution) => {
+  const handleSelectInstitution = (institution: GovJiGou) => {
     // 这里应该保存选中的机构信息
     console.log('Selected institution:', institution);
     router.back(); // 返回首页
   };
 
-  const renderInstitutionItem = ({ item }: { item: Institution }) => (
+  const renderInstitutionItem = ({ item }: { item: GovJiGou }) => (
     <TouchableOpacity 
       style={styles.institutionItem}
       onPress={() => handleSelectInstitution(item)}
     >
       <View style={styles.institutionInfo}>
-        <ThemedText style={styles.institutionName}>{item.name}</ThemedText>
-        <ThemedText style={styles.institutionDetail}>机构代码：{item.code}</ThemedText>
-        <ThemedText style={styles.institutionDetail}>地址：{item.address}</ThemedText>
+        <ThemedText style={styles.institutionName}>{item.JiGou_MingCheng}</ThemedText>
+        <ThemedText style={styles.institutionDetail}>机构代码：{item.SheHui_XinYong_DaiMa}</ThemedText>
+        <ThemedText style={styles.institutionDetail}>地址：{item.DiZhi}</ThemedText>
       </View>
     </TouchableOpacity>
   );
 
-  return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
+  if (isLoading) {
+    return (
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color="#4080FF" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centerContainer}>
+        <ThemedText style={styles.errorText}>{error}</ThemedText>
         <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
+          style={styles.retryButton}
+          onPress={fetchInstitutions}
         >
-          <ThemedText style={styles.backButtonText}>返回</ThemedText>
+          <ThemedText style={styles.retryButtonText}>重试</ThemedText>
         </TouchableOpacity>
-        <ThemedText style={styles.title}>选择机构</ThemedText>
-        <View style={styles.placeholder} />
       </View>
+    );
+  }
 
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="搜索机构名称或代码"
-          value={searchText}
-          onChangeText={setSearchText}
-          clearButtonMode="while-editing"
-        />
-      </View>
-
+  return (
+    <View style={styles.container}>
       <FlatList
-        data={filteredInstitutions}
+        data={institutions}
         renderItem={renderInstitutionItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.F_Id || ''}
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -92,6 +94,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingTop: Platform.OS === 'ios' ? 0 : 8,
+  },
+  centerContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
   },
   header: {
     flexDirection: 'row',
@@ -117,10 +127,14 @@ const styles = StyleSheet.create({
     width: 40,
   },
   searchContainer: {
-    padding: 16,
+    padding: 12,
+    paddingTop: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+    backgroundColor: '#fff',
   },
   searchInput: {
-    height: 40,
+    height: 36,
     backgroundColor: '#F5F5F5',
     borderRadius: 8,
     paddingHorizontal: 16,
@@ -148,5 +162,22 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: '#E5E5E5',
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#FF4B4B',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  retryButton: {
+    backgroundColor: '#4080FF',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 }); 
