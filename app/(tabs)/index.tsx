@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View,Alert } from 'react-native';
 import { ThemedText } from '../../src/components/ThemedText';
 import { ThemedView } from '../../src/components/ThemedView';
 import { ScrollView } from 'react-native';
@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
+import { GovJiGou } from '../../src/services/auth';
 
 interface MenuItemProps {
   title: string;
@@ -51,17 +52,22 @@ function MenuSection({ title, items }: MenuSectionProps) {
 }
 
 export default function HomeScreen() {
-  const [token, setToken] = useState<string | null>(null);
-  
+  const [institution, setInstitution] = useState<GovJiGou | null>(null);
+
   useEffect(() => {
-    // 获取并显示 token
-    const getToken = async () => {
-      const storedToken = await AsyncStorage.getItem('token');
-      setToken(storedToken);
-      console.log('Current token:', storedToken); // 在控制台打印 token
-    };
-    getToken();
+    loadInstitution();
   }, []);
+
+  const loadInstitution = async () => {
+    try {
+      const savedInstitution = await AsyncStorage.getItem('selectedInstitution');
+      if (savedInstitution) {
+        setInstitution(JSON.parse(savedInstitution));
+      }
+    } catch (err) {
+      console.error('加载机构信息失败:', err);
+    }
+  };
 
   const institutionItems = ['机构信息2', '从业人员管理', '班级管理', '园所条约',
                           '卫生保健管理', '机构规章', '费用评价', '活动管理'];
@@ -85,10 +91,14 @@ export default function HomeScreen() {
             <ThemedText style={styles.switchButtonText}>切换</ThemedText>
           </TouchableOpacity>
         </View>
-        <View style={styles.institutionInfo}>
-          <ThemedText style={styles.infoText}>机构代码：12345678</ThemedText>
-          <ThemedText style={styles.infoText}>地址：某某市某某区某某街道</ThemedText>
-        </View>
+        {institution ? (
+          <View style={styles.institutionInfo}>
+            <ThemedText style={styles.infoText}>机构代码：{institution.SheHui_XinYong_DaiMa}</ThemedText>
+            <ThemedText style={styles.infoText}>地址：{institution.DiZhi}</ThemedText>
+          </View>
+        ) : (
+          <ThemedText style={styles.noInstitution}>未选择机构</ThemedText>
+        )}
       </View>
       
       <ScrollView 
@@ -185,5 +195,10 @@ const styles = StyleSheet.create({
   switchButtonText: {
     fontSize: 14,
     color: '#4080FF',
+  },
+  noInstitution: {
+    fontSize: 16,
+    color: '#999',
+    textAlign: 'center',
   },
 }); 

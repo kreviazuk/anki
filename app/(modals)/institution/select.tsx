@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { GovJiGou, GovJiGouService_GetGovJiGous, ListResponse } from '../../../src/services/auth';
 import { request } from '../../../src/services/client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function InstitutionSelectScreen() {
   const [searchText, setSearchText] = useState('');
@@ -36,10 +37,13 @@ export default function InstitutionSelectScreen() {
     }
   };
 
-  const handleSelectInstitution = (institution: GovJiGou) => {
-    // 这里应该保存选中的机构信息
-    console.log('Selected institution:', institution);
-    router.back(); // 返回首页
+  const handleSelectInstitution = async (institution: GovJiGou) => {
+    try {
+      await AsyncStorage.setItem('selectedInstitution', JSON.stringify(institution));
+      router.back(); // 返回首页
+    } catch (err) {
+      Alert.alert('错误', '保存机构信息失败');
+    }
   };
 
   const renderInstitutionItem = ({ item }: { item: GovJiGou }) => (
