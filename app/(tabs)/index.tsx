@@ -59,7 +59,12 @@ function MenuSection({ title, items, lineColor }: MenuSectionProps) {
         <SectionTitleWithLine title={title} lineColor={lineColor} />
         <View style={styles.grid}>
           {items.map((item, index) => (
-            <MenuItem key={index} title={item.title} Icon={item.Icon} />
+            <MenuItem 
+              key={index} 
+              title={item.title} 
+              Icon={item.Icon} 
+              onPress={item.onPress}
+            />
           ))}
         </View>
       </View>
@@ -91,8 +96,16 @@ export default function HomeScreen() {
 
   const imageUrl = institution?.TuPian?.[0]?.url ? getImageUrl(institution.TuPian[0].url) : '';
 
+  const handleNavigateToInstitutionEdit = () => {
+    router.push('/(tabs)/institution/edit');
+  };
+
   const institutionItems = [
-    { title: '机构信息', Icon: JgxxIcon },
+    { 
+      title: '机构信息', 
+      Icon: JgxxIcon,
+      onPress: handleNavigateToInstitutionEdit
+    },
     { title: '从业人员管理' },
     { title: '班级管理' },
     { title: '园所条约' },
@@ -117,9 +130,10 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
       <ScrollView 
         style={styles.scrollView} 
+        contentContainerStyle={styles.scrollViewContent}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.sectionContainer}>
@@ -139,30 +153,30 @@ export default function HomeScreen() {
                         <ThemedText style={styles.avatarText}>
                           {institution?.JiGou_MingCheng?.charAt(0) || '机'}
                         </ThemedText>
-                      </View>
+          </View>
                     )}
-                  </View>
+          </View>
                   <View style={styles.institutionInfo}>
                     <ThemedText style={styles.institutionName} numberOfLines={1}>
                       {institution?.JiGou_MingCheng || '未选择机构'}
                     </ThemedText>
-                  </View>
-                </View>
+            </View>
+          </View>
                 <View style={styles.headerButtons}>
-                  <TouchableOpacity 
+          <TouchableOpacity 
                     style={styles.switchButton}
                     onPress={() => {
                       router.push('/(modals)/institution/select');
                     }}
                   >
                     <ThemedText style={styles.switchButtonText}>切换机构</ThemedText>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
+          </TouchableOpacity>
+            <TouchableOpacity 
                     style={[styles.switchButton, styles.logoutButton]}
                     onPress={handleLogout}
-                  >
+            >
                     <ThemedText style={[styles.switchButtonText, styles.logoutText]}>退出登录</ThemedText>
-                  </TouchableOpacity>
+            </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -184,8 +198,13 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingTop: 12,
+  },
   sectionContainer: {
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
   },
   section: {
     marginBottom: 12,
