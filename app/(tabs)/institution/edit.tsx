@@ -1,14 +1,18 @@
-import { StyleSheet, View, ScrollView, Image } from 'react-native';
+import { StyleSheet, View, ScrollView, Image, TouchableOpacity, ImageURISource } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '../../../src/components/ThemedText';
 import { Stack } from 'expo-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GovJiGou, FileControlsModel } from '../../../src/services/auth';
 import { getImageUrl } from '../../../src/utils/image';
+import ImageView from 'react-native-image-viewing';
 
 export default function InstitutionEditScreen() {
   const [institutionInfo, setInstitutionInfo] = useState<GovJiGou | null>(null);
+  const [isImageViewVisible, setIsImageViewVisible] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<boolean[]>([]);
 
   useEffect(() => {
     loadInstitutionInfo();
@@ -43,6 +47,32 @@ export default function InstitutionEditScreen() {
     </View>
   );
 
+  const images = useMemo(() => {
+    if (!institutionInfo?.TuPian) return [];
+    return institutionInfo.TuPian.map(image => ({
+      uri: getImageUrl(image.url)
+    }));
+  }, [institutionInfo?.TuPian]);
+
+  useEffect(() => {
+    if (institutionInfo?.TuPian) {
+      setLoadedImages(new Array(institutionInfo.TuPian.length).fill(false));
+    }
+  }, [institutionInfo?.TuPian]);
+
+  const handleImageLoad = (index: number) => {
+    setLoadedImages(prev => {
+      const newLoadedImages = [...prev];
+      newLoadedImages[index] = true;
+      return newLoadedImages;
+    });
+  };
+
+  const handleImagePress = (index: number) => {
+    setCurrentImageIndex(index);
+    setIsImageViewVisible(true);
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['left','right','bottom']}>
       <Stack.Screen options={{ title: '机构信息' }} />
@@ -68,12 +98,23 @@ export default function InstitutionEditScreen() {
             <ThemedText style={styles.label}>机构图片</ThemedText>
             <View style={styles.imageGrid}>
               {institutionInfo.TuPian.map((image: FileControlsModel, index: number) => (
-                <Image 
+                <TouchableOpacity
                   key={index}
-                  source={{ uri: getImageUrl(image.url) }}
-                  style={styles.image}
-                  defaultSource={require('../../../assets/images/icon.png')}
-                />
+                  onPress={() => handleImagePress(index)}
+                  activeOpacity={0.7}
+                >
+                  <Image 
+                    source={{ uri: getImageUrl(image.url) }}
+                    style={styles.image}
+                    defaultSource={require('../../../assets/images/icon.png')}
+                    onLoad={() => handleImageLoad(index)}
+                  />
+                  {!loadedImages[index] && (
+                    <View style={styles.imagePlaceholder}>
+                      <ThemedText style={styles.loadingText}>加载中...</ThemedText>
+                    </View>
+                  )}
+                </TouchableOpacity>
               ))}
             </View>
           </View>
@@ -96,6 +137,25 @@ export default function InstitutionEditScreen() {
         <InfoItem label="计时托保育费" value={`${formatValue(institutionInfo?.JiShi_BaoYuFei) || ''} 元`} />
         <InfoItem label="临时托保育费" value={`${formatValue(institutionInfo?.LinShi_BaoYuFei) || ''} 元`} />
       </ScrollView>
+
+      <ImageView
+        images={images}
+        imageIndex={currentImageIndex}
+        visible={isImageViewVisible}
+        onRequestClose={() => setIsImageViewVisible(false)}
+        swipeToCloseEnabled={true}
+        doubleTapToZoomEnabled={true}
+        presentationStyle="overFullScreen"
+        animationType="fade"
+        backgroundColor="black"
+        FooterComponent={({ imageIndex }) => (
+          <View style={styles.imageFooter}>
+            <ThemedText style={styles.imageCounter}>
+              {`${imageIndex + 1} / ${images.length}`}
+            </ThemedText>
+          </View>
+        )}
+      />
     </SafeAreaView>
   );
 }
@@ -139,5 +199,31 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginBottom: 8,
     borderRadius: 4,
+  },
+  imageFooter: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    padding: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    alignItems: 'center',
+  },
+  imageCounter: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  imagePlaceholder: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 12,
+    color: '#666',
   },
 });
