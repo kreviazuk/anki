@@ -37,7 +37,7 @@ export default function InstitutionSelectScreen() {
   const handleSelectInstitution = async (institution: GovJiGou) => {
     try {
       await AsyncStorage.setItem('selectedInstitution', JSON.stringify(institution));
-      router.back();
+      router.replace('/(tabs)');
     } catch (err) {
       Alert.alert('错误', '保存机构信息失败');
     }

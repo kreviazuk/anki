@@ -22,13 +22,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     adaptiveIcon: {
-      foregroundImage: './assets/adaptive-icon.png',
+      foregroundImage: './assets/images/icon.png',
       backgroundColor: '#ffffff'
     },
     package: 'com.yourcompany.myapp'
   },
   extra: {
     apiUrl: process.env.EXPO_PUBLIC_API_URL,
-    apiTimeout: process.env.EXPO_PUBLIC_API_TIMEOUT
+    apiTimeout: process.env.EXPO_PUBLIC_API_TIMEOUT,
+    "eas": {
+      "projectId": "6a99334c-4293-4c19-8682-5483c93d2c32"
+    }
   }
 }); 

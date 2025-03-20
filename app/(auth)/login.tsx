@@ -107,19 +107,7 @@ export default function LoginScreen() {
       console.log('Login response received:', response);
       
       if (response.Code === 200 && response.Token) {
-        await AsyncStorage.setItem('token', response.Token);
-        Alert.alert(
-          '登录成功',
-          '欢迎回来！',
-          [
-            {
-              text: '确定',
-              onPress: () => {
-                router.replace('/(tabs)');
-              },
-            },
-          ]
-        );
+        await handleLoginSuccess(response.Token);
       } else {
         console.error('Login failed:', response.Message);
         Alert.alert('错误', response.Message || '登录失败，请重试');
@@ -129,6 +117,25 @@ export default function LoginScreen() {
       Alert.alert('错误', '网络错误，请稍后重试');
     } finally {
       setLoginLoading(false);
+    }
+  };
+
+  const handleLoginSuccess = async (token: string) => {
+    try {
+      await AsyncStorage.setItem('token', token);
+      // 登录成功后检查是否有机构信息
+      const storedInstitution = await AsyncStorage.getItem('selectedInstitution');
+      
+      if (storedInstitution) {
+        // 如果有机构信息，直接跳转到首页
+        router.replace('/(tabs)');
+      } else {
+        // 如果没有机构信息，跳转到机构选择页
+        router.replace('/(modals)/institution/select');
+      }
+    } catch (error) {
+      console.error('Error saving token:', error);
+      Alert.alert('错误', '登录失败，请重试');
     }
   };
 

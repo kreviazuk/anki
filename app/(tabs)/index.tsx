@@ -88,6 +88,16 @@ export default function HomeScreen() {
   const dailyItems = ['学期设置', '晨检记录', '一日生活', '一周食谱',
                      '健康与茶', '消防中心', '用药共识', '机构满意度'];
 
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear(); // 清除所有本地存储的数据
+      router.replace('/(auth)/login'); // 跳转到登录页
+    } catch (error) {
+      console.error('Logout error:', error);
+      Alert.alert('错误', '退出登录失败，请重试');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView 
@@ -120,14 +130,22 @@ export default function HomeScreen() {
                     </ThemedText>
                   </View>
                 </View>
-                <TouchableOpacity 
-                  style={styles.switchButton}
-                  onPress={() => {
-                    router.push('/(modals)/institution/select');
-                  }}
-                >
-                  <ThemedText style={styles.switchButtonText}>切换机构</ThemedText>
-                </TouchableOpacity>
+                <View style={styles.headerButtons}>
+                  <TouchableOpacity 
+                    style={styles.switchButton}
+                    onPress={() => {
+                      router.push('/(modals)/institution/select');
+                    }}
+                  >
+                    <ThemedText style={styles.switchButtonText}>切换机构</ThemedText>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.switchButton, styles.logoutButton]}
+                    onPress={handleLogout}
+                  >
+                    <ThemedText style={[styles.switchButtonText, styles.logoutText]}>退出登录</ThemedText>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
@@ -246,5 +264,16 @@ const styles = StyleSheet.create({
   menuText: {
     fontSize: 12,
     textAlign: 'center',
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  logoutButton: {
+    backgroundColor: '#FFF0F0',
+  },
+  logoutText: {
+    color: '#FF4D4F',
   },
 }); 
