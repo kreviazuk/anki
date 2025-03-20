@@ -12,14 +12,19 @@ import { GovJiGou } from '../../src/services/auth';
 import { useFocusEffect } from 'expo-router';
 import { getImageUrl } from '../../src/utils/image';
 import { Image } from 'react-native';
+import { SectionTitleWithLine } from '../../src/components/SectionTitleWithLine';
+import { SvgProps } from 'react-native-svg';
+import JgxxIcon from '../../assets/images/icon-jgxx.svg';
 
 interface MenuItemProps {
   title: string;
   onPress?: () => void;
+  Icon?: React.FC<SvgProps>;
 }
 
-function MenuItem({ title, onPress }: MenuItemProps) {
+function MenuItem({ title, onPress, Icon }: MenuItemProps) {
   const colorScheme = useColorScheme();
+  const tintColor = Colors[colorScheme ?? 'light'].tint;
   
   return (
     <TouchableOpacity 
@@ -29,8 +34,11 @@ function MenuItem({ title, onPress }: MenuItemProps) {
     >
       <View style={styles.menuItemContent}>
         <View style={styles.iconContainer}>
-          {/* 图标占位符 */}
-          <View style={[styles.iconPlaceholder, { backgroundColor: Colors[colorScheme ?? 'light'].tint }]} />
+          {Icon ? (
+            <Icon width={48} height={48} fill={tintColor} />
+          ) : (
+            <View style={[styles.iconPlaceholder, { backgroundColor: tintColor }]} />
+          )}
         </View>
         <ThemedText style={styles.menuText}>{title}</ThemedText>
       </View>
@@ -40,17 +48,18 @@ function MenuItem({ title, onPress }: MenuItemProps) {
 
 interface MenuSectionProps {
   title: string;
-  items: string[];
+  items: MenuItemProps[];
+  lineColor?: string;
 }
 
-function MenuSection({ title, items }: MenuSectionProps) {
+function MenuSection({ title, items, lineColor }: MenuSectionProps) {
   return (
     <View style={styles.section}>
       <View style={styles.sectionContent}>
-        <ThemedText style={styles.sectionTitle}>{title}</ThemedText>
+        <SectionTitleWithLine title={title} lineColor={lineColor} />
         <View style={styles.grid}>
           {items.map((item, index) => (
-            <MenuItem key={index} title={item} />
+            <MenuItem key={index} title={item.title} Icon={item.Icon} />
           ))}
         </View>
       </View>
@@ -82,13 +91,20 @@ export default function HomeScreen() {
 
   const imageUrl = institution?.TuPian?.[0]?.url ? getImageUrl(institution.TuPian[0].url) : '';
 
-  const institutionItems = ['机构信息', '从业人员管理', '班级管理', '园所条约',
-                          '卫生保健管理', '机构规章', '费用评价', '活动管理'];
+  const institutionItems = [
+    { title: '机构信息', Icon: JgxxIcon },
+    { title: '从业人员管理' },
+    { title: '班级管理' },
+    { title: '园所条约' },
+    { title: '卫生保健管理' },
+    { title: '机构规章' },
+    { title: '费用评价' },
+    { title: '活动管理' }
+  ];
   
-  const enrollmentItems = ['幼儿入托', '幼儿管理', '入托约定'];
-  
+  const enrollmentItems = ['幼儿入托', '幼儿管理', '入托约定'].map(title => ({ title }));
   const dailyItems = ['学期设置', '晨检记录', '一日生活', '一周食谱',
-                     '健康与茶', '消防中心', '用药共识', '机构满意度'];
+                     '健康与茶', '消防中心', '用药共识', '机构满意度'].map(title => ({ title }));
 
   const handleLogout = async () => {
     try {
@@ -151,9 +167,9 @@ export default function HomeScreen() {
               </View>
             </View>
           </View>
-          <MenuSection title="机构管理" items={institutionItems} />
-          <MenuSection title="入托管理" items={enrollmentItems} />
-          <MenuSection title="日常管理" items={dailyItems} />
+          <MenuSection title="机构管理" items={institutionItems} lineColor="#4080FF" />
+          <MenuSection title="入托管理" items={enrollmentItems} lineColor="#00B578" />
+          <MenuSection title="日常管理" items={dailyItems} lineColor="#FF7D00" />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -248,7 +264,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#EFF4F9',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,

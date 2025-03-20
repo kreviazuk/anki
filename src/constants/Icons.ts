@@ -1,0 +1,1 @@
+export { default as JgxxIcon } from '../../assets/images/icon-jgxx.svg'; 
