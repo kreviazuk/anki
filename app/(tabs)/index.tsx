@@ -71,7 +71,9 @@ export default function HomeScreen() {
       console.error('Error loading institution:', error);
     }
   }, []);
-
+ useEffect(() => {
+  console.log('institution', institution);
+ }, [institution]);
   useFocusEffect(
     useCallback(() => {
       loadInstitution();
