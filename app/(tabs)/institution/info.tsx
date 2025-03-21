@@ -1,14 +1,14 @@
-import { StyleSheet, View, ScrollView, Image, TouchableOpacity, ImageURISource } from 'react-native';
+import { StyleSheet, View, ScrollView, Image, TouchableOpacity, ImageURISource, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '../../../src/components/ThemedText';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { useState, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GovJiGou, FileControlsModel } from '../../../src/services/auth';
 import { getImageUrl } from '../../../src/utils/image';
 import ImageView from 'react-native-image-viewing';
 
-export default function InstitutionEditScreen() {
+export default function InstitutionInfoScreen() {
   const [institutionInfo, setInstitutionInfo] = useState<GovJiGou | null>(null);
   const [isImageViewVisible, setIsImageViewVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -72,10 +72,34 @@ export default function InstitutionEditScreen() {
     setCurrentImageIndex(index);
     setIsImageViewVisible(true);
   };
-
+  const handleEdit = () => {
+    Alert.alert('开始跳转')
+    console.log('开始跳转...');
+    try {
+      // 使用相对路径
+      router.push('./edit');
+      console.log('跳转完成');
+      Alert.alert('跳转完成')
+    } catch (error) {
+      Alert.alert('跳转失败')
+      console.error('跳转失败:', error);
+    }
+  }
   return (
     <SafeAreaView style={styles.container} edges={['left','right','bottom']}>
-      <Stack.Screen options={{ title: '机构信息' }} />
+      <Stack.Screen options={{
+          title: "机构信息",
+          headerRight: () => (
+            <TouchableOpacity 
+              style={{ paddingHorizontal: 16, paddingVertical: 8 }}
+              onPress={handleEdit}
+            >
+              <ThemedText style={{ fontSize: 16, color: '#4080FF', fontWeight: '600' }}>
+                编辑
+              </ThemedText>
+            </TouchableOpacity>
+          ),
+        }} />
       <ScrollView style={styles.content}>
         <InfoItem label="机构名称" value={formatValue(institutionInfo?.JiGou_MingCheng)} />
         <InfoItem label="社会信用代码" value={formatValue(institutionInfo?.SheHui_XinYong_DaiMa)} />

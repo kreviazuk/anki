@@ -31,22 +31,6 @@ export default function TabLayout() {
           title: "首页",
         }}
       />
-      <Stack.Screen
-        name="institution/info"
-        options={{
-          title: "机构信息",
-          headerRight: () => (
-            <TouchableOpacity 
-              style={{ paddingHorizontal: 16, paddingVertical: 8 }}
-              onPress={() => console.log('编辑按钮被点击')}
-            >
-              <ThemedText style={{ fontSize: 16, color: '#4080FF', fontWeight: '600' }}>
-                编辑
-              </ThemedText>
-            </TouchableOpacity>
-          ),
-        }}
-      />
     </Stack>
   );
 }
