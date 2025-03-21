@@ -83,17 +83,33 @@ export default function InstitutionEditScreen() {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const FormField = ({ label, name, formik }: { label: string; name: keyof GovJiGou; formik: any }) => (
-    <View style={styles.fieldContainer}>
-      <ThemedText style={styles.label}>{label}</ThemedText>
-      <TextInput
-        style={styles.input}
-        value={String(formik.values[name] || '')}
-        onChangeText={formik.handleChange(name)}
-        onBlur={formik.handleBlur(name)}
-      />
-    </View>
-  );
+  const FormField = ({ label, name, formik }: { label: string; name: keyof GovJiGou; formik: any }) => {
+    const value = formik.values[name];
+    const displayValue = Array.isArray(value) ? value.join(', ') : String(value || '');
+    
+    const handleChange = (text: string) => {
+      if (name === 'FuWu_XingShi') {
+        // Split by comma and trim whitespace for array fields
+        const arrayValue = text.split(',').map(item => item.trim()).filter(item => item);
+        formik.setFieldValue(name, arrayValue);
+      } else {
+        formik.handleChange(name)(text);
+      }
+    };
+
+    return (
+      <View style={styles.fieldContainer}>
+        <ThemedText style={styles.label}>{label}</ThemedText>
+        <TextInput
+          style={styles.input}
+          value={displayValue}
+          onChangeText={handleChange}
+          onBlur={formik.handleBlur(name)}
+          placeholder={name === 'FuWu_XingShi' ? '请输入，用逗号分隔' : ''}
+        />
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
@@ -132,6 +148,22 @@ export default function InstitutionEditScreen() {
         >
           {(formik) => (
             <View style={styles.form}>
+              <FormField label="机构名称" name="JiGou_MingCheng" formik={formik} />
+              <FormField label="社会信用代码" name="SheHui_XinYong_DaiMa" formik={formik} />
+              <FormField label="法人姓名" name="FaRen_XingMing" formik={formik} />
+              <FormField label="法人证件号" name="FaRen_ZhengJianHao" formik={formik} />
+              <FormField label="机构负责人" name="FuZeRen" formik={formik} />
+              <FormField label="机构电话" name="DianHua" formik={formik} />
+              <FormField label="机构成立时间" name="ChengLi_ShiJian" formik={formik} />
+              <FormField label="机构分类" name="JiGou_FenLei" formik={formik} />
+              <FormField label="托育机构服务类型" name="FuWu_LeiXing" formik={formik} />
+              <FormField label="单位承办" name="DanWei_ChengBan" formik={formik} />
+              <FormField label="事业单位" name="ShiYe_DanWei" formik={formik} />
+              <FormField label="场所性质" name="ChangSuo_XingZhi" formik={formik} />
+              <FormField label="机构登记部门" name="DengJi_BuMen" formik={formik} />
+              <FormField label="机构备案情况" name="BeiAn_QingKuang" formik={formik} />
+              <FormField label="服务形式" name="FuWu_XingShi" formik={formik} />
+
               <View style={styles.fieldContainer}>
                 <ThemedText style={styles.label}>机构图片</ThemedText>
                 <View style={styles.imageGrid}>
@@ -159,20 +191,6 @@ export default function InstitutionEditScreen() {
                 </View>
               </View>
 
-              <FormField label="机构名称" name="JiGou_MingCheng" formik={formik} />
-              <FormField label="社会信用代码" name="SheHui_XinYong_DaiMa" formik={formik} />
-              <FormField label="法人姓名" name="FaRen_XingMing" formik={formik} />
-              <FormField label="法人证件号" name="FaRen_ZhengJianHao" formik={formik} />
-              <FormField label="机构负责人" name="FuZeRen" formik={formik} />
-              <FormField label="机构电话" name="DianHua" formik={formik} />
-              <FormField label="机构成立时间" name="ChengLi_ShiJian" formik={formik} />
-              <FormField label="机构分类" name="JiGou_FenLei" formik={formik} />
-              <FormField label="托育机构服务类型" name="FuWu_LeiXing" formik={formik} />
-              <FormField label="单位承办" name="DanWei_ChengBan" formik={formik} />
-              <FormField label="事业单位" name="ShiYe_DanWei" formik={formik} />
-              <FormField label="场所性质" name="ChangSuo_XingZhi" formik={formik} />
-              <FormField label="机构登记部门" name="DengJi_BuMen" formik={formik} />
-              <FormField label="机构备案情况" name="BeiAn_QingKuang" formik={formik} />
               <FormField label="机构地址" name="DiZhi" formik={formik} />
               <FormField label="机构建筑总面积" name="JianZhu_MianJi" formik={formik} />
               <FormField label="自有户外活动场地面积" name="HuWai_MianJi" formik={formik} />
