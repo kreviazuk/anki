@@ -18,6 +18,7 @@ import JgxxIcon from '../../assets/images/icon-jgxx.svg';
 import CyryIcon from '../../assets/images/icon-cyrygl.svg'
 
 type AppRoute = 
+  | '/(tabs)/institution/info'
   | '/(tabs)/institution/edit'
   | '/(tabs)/congye'
   | '/(tabs)/class'
@@ -142,7 +143,7 @@ export default function HomeScreen() {
     { 
       title: '机构信息', 
       Icon: JgxxIcon,
-      path: '/(tabs)/institution/edit'
+      path: '/(tabs)/institution/info'
     },
     { 
       title: '从业人员管理',

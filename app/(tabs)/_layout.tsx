@@ -32,7 +32,7 @@ export default function TabLayout() {
         }}
       />
       <Stack.Screen
-        name="institution/edit"
+        name="institution/info"
         options={{
           title: "机构信息",
           headerRight: () => (
