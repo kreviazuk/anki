@@ -43,6 +43,13 @@
           "microphonePermission": "Allow 我的app to access your microphone",
           "recordAudioAndroid": true
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app needs access to your photos to let you share them.",
+          "cameraPermission": "The app needs access to your camera to take photos."
+        }
       ]
     ],
     "experiments": {

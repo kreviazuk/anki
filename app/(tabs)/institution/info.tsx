@@ -73,15 +73,12 @@ export default function InstitutionInfoScreen() {
     setIsImageViewVisible(true);
   };
   const handleEdit = () => {
-    Alert.alert('开始跳转')
     console.log('开始跳转...');
     try {
       // 使用相对路径
       router.push('./edit');
       console.log('跳转完成');
-      Alert.alert('跳转完成')
     } catch (error) {
-      Alert.alert('跳转失败')
       console.error('跳转失败:', error);
     }
   }
