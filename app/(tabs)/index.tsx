@@ -15,21 +15,52 @@ import { Image } from 'react-native';
 import { SectionTitleWithLine } from '../../src/components/SectionTitleWithLine';
 import { SvgProps } from 'react-native-svg';
 import JgxxIcon from '../../assets/images/icon-jgxx.svg';
+import CyryIcon from '../../assets/images/icon-cyrygl.svg'
+
+type AppRoute = 
+  | '/(tabs)/institution/edit'
+  | '/(tabs)/congye'
+  | '/(tabs)/class'
+  | '/(tabs)/treaty'
+  | '/(tabs)/health'
+  | '/(tabs)/rules'
+  | '/(tabs)/fee'
+  | '/(tabs)/activity'
+  | '/(tabs)/enrollment/add'
+  | '/(tabs)/enrollment/manage'
+  | '/(tabs)/enrollment/agreement'
+  | '/(tabs)/daily/term'
+  | '/(tabs)/daily/check'
+  | '/(tabs)/daily/life'
+  | '/(tabs)/daily/menu'
+  | '/(tabs)/daily/health'
+  | '/(tabs)/daily/fire'
+  | '/(tabs)/daily/medicine'
+  | '/(tabs)/daily/satisfaction';
 
 interface MenuItemProps {
   title: string;
   onPress?: () => void;
   Icon?: React.FC<SvgProps>;
+  path?: string;
 }
 
-function MenuItem({ title, onPress, Icon }: MenuItemProps) {
+function MenuItem({ title, onPress, Icon, path }: MenuItemProps) {
   const colorScheme = useColorScheme();
   const tintColor = Colors[colorScheme ?? 'light'].tint;
+  
+  const handlePress = () => {
+    if (path) {
+      router.push(path as any);
+    } else if (onPress) {
+      onPress();
+    }
+  };
   
   return (
     <TouchableOpacity 
       style={styles.menuItem} 
-      onPress={onPress}
+      onPress={handlePress}
       activeOpacity={0.7}
     >
       <View style={styles.menuItemContent}>
@@ -64,6 +95,7 @@ function MenuSection({ title, items, lineColor }: MenuSectionProps) {
               title={item.title} 
               Icon={item.Icon} 
               onPress={item.onPress}
+              path={item.path}
             />
           ))}
         </View>
@@ -96,29 +128,6 @@ export default function HomeScreen() {
 
   const imageUrl = institution?.TuPian?.[0]?.url ? getImageUrl(institution.TuPian[0].url) : '';
 
-  const handleNavigateToInstitutionEdit = () => {
-    router.push('/(tabs)/institution/edit');
-  };
-
-  const institutionItems = [
-    { 
-      title: '机构信息', 
-      Icon: JgxxIcon,
-      onPress: handleNavigateToInstitutionEdit
-    },
-    { title: '从业人员管理' },
-    { title: '班级管理' },
-    { title: '园所条约' },
-    { title: '卫生保健管理' },
-    { title: '机构规章' },
-    { title: '费用评价' },
-    { title: '活动管理' }
-  ];
-  
-  const enrollmentItems = ['幼儿入托', '幼儿管理', '入托约定'].map(title => ({ title }));
-  const dailyItems = ['学期设置', '晨检记录', '一日生活', '一周食谱',
-                     '健康与茶', '消防中心', '用药共识', '机构满意度'].map(title => ({ title }));
-
   const handleLogout = async () => {
     try {
       await AsyncStorage.clear(); // 清除所有本地存储的数据
@@ -128,6 +137,42 @@ export default function HomeScreen() {
       Alert.alert('错误', '退出登录失败，请重试');
     }
   };
+
+  const institutionItems: MenuItemProps[] = [
+    { 
+      title: '机构信息', 
+      Icon: JgxxIcon,
+      path: '/(tabs)/institution/edit'
+    },
+    { 
+      title: '从业人员管理',
+      Icon: CyryIcon,
+      path: '/(tabs)/congye'
+    },
+    { title: '班级管理', path: '/(tabs)/class' },
+    { title: '园所条约', path: '/(tabs)/treaty' },
+    { title: '卫生保健管理', path: '/(tabs)/health' },
+    { title: '机构规章', path: '/(tabs)/rules' },
+    { title: '费用评价', path: '/(tabs)/fee' },
+    { title: '活动管理', path: '/(tabs)/activity' }
+  ];
+  
+  const enrollmentItems: MenuItemProps[] = [
+    { title: '幼儿入托', path: '/(tabs)/enrollment/add' },
+    { title: '幼儿管理', path: '/(tabs)/enrollment/manage' },
+    { title: '入托约定', path: '/(tabs)/enrollment/agreement' }
+  ];
+
+  const dailyItems: MenuItemProps[] = [
+    { title: '学期设置', path: '/(tabs)/daily/term' },
+    { title: '晨检记录', path: '/(tabs)/daily/check' },
+    { title: '一日生活', path: '/(tabs)/daily/life' },
+    { title: '一周食谱', path: '/(tabs)/daily/menu' },
+    { title: '健康与茶', path: '/(tabs)/daily/health' },
+    { title: '消防中心', path: '/(tabs)/daily/fire' },
+    { title: '用药共识', path: '/(tabs)/daily/medicine' },
+    { title: '机构满意度', path: '/(tabs)/daily/satisfaction' }
+  ];
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
